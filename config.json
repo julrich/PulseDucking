@@ -1,6 +1,8 @@
 {
-  "applications": [{
-      "name": "Google Chrome",
+  "applications": [
+    {
+      "displayName": "Zoom",
+      "name": "ZOOM VoiceEngine",
       "supports": [],
       "role": "master"
     },
@@ -12,15 +14,17 @@
     },
     {
       "name": "Spotify",
-      "supports": [
-        "play",
-        "pause"
-      ],
+      "supports": ["play", "pause"],
+      "role": "slave"
+    },
+    {
+      "name": "Firefox",
+      "supports": ["play", "pause"],
       "role": "slave"
     }
   ],
   "preferences": {
-    "duckByPercent": 50,
+    "duckByPercent": 60,
     "sourcesUpdateInterval": 5
   }
 }

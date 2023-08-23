@@ -1,10 +1,28 @@
 import math
+import json
 import subprocess
+import inputs
 
-duckPercent = 30
-FULL_VOLUME = 65536
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+duckPercent = int(config["preferences"]["duckByPercent"]) or 50
+# TODO read current volume value from sink to duck based on that
+FULL_VOLUME = math.floor(65536 * 0.8)
+
 
 def onPlayStateChange(playing):
-    # print(subprocess.check_output(['dbus-send', '--print-reply', '--dest=org.mpris.MediaPlayer2.spotify', '/org/mpris/MediaPlayer2', 'org.mpris.MediaPlayer2.Player.' + ('Play' if not playing else 'Pause')]))
-    volume = math.floor(FULL_VOLUME * ((100-duckPercent) / 100)) if playing else FULL_VOLUME
-    r = subprocess.check_output(['pacmd', 'set-sink-input-volume', '513', str(volume)])
+    inputsList = inputs.get()
+    namesToDuck = [a["name"] for a in config["applications"] if a["role"] == "slave"]
+    inputsToDuck = [i for i in inputsList if i.name in namesToDuck]
+
+    volume = (
+        math.floor(FULL_VOLUME * ((100 - duckPercent) / 100))
+        if playing
+        else FULL_VOLUME
+    )
+    for input in inputsToDuck:
+        # TODO don't set immediately (jarring), but ramp to target volume
+        r = subprocess.check_output(
+            ["pacmd", "set-sink-input-volume", str(input.index), str(volume)]
+        )
