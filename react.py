@@ -32,7 +32,6 @@ def onPlayStateChange(playing):
         elapsedtime = current_milli_time() - starttime
         time.sleep(0.01)
         for input in inputsToDuck:
-            print(playing, input)
             if playing:
                 volumesOriginal[input.index] = int(input.volume)
                 duckedVolumeDifference = math.floor(
