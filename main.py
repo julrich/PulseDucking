@@ -8,9 +8,6 @@ import inputs
 import react
 import reader
 
-with open("config.json", "r") as f:
-    config = json.load(f)
-
 watchingIndices = []
 
 
@@ -28,12 +25,17 @@ supervisorInstance = Supervisor()
 
 
 def updateWatches():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+
     inputsList = inputs.get()
 
-    namesToWatch = [a["name"] for a in config["applications"] if a["role"] == "master"]
+    namesToWatch = [a["name"]
+                    for a in config["applications"] if a["role"] == "master"]
 
     inputsToWatch = [i for i in inputsList if i.name in namesToWatch]
-    inputsToWatchNew = [i for i in inputsToWatch if i.index not in watchingIndices]
+    inputsToWatchNew = [
+        i for i in inputsToWatch if i.index not in watchingIndices]
 
     for inputToWatch in inputsToWatchNew:
         print(f"Started watching {inputToWatch}")

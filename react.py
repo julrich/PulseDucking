@@ -4,14 +4,7 @@ import subprocess
 import inputs
 import time
 
-with open("config.json", "r") as f:
-    config = json.load(f)
-
 fullVolume = 65536
-
-duckPercent = int(config["preferences"]["duckByPercent"]) or 50
-duckRamp = int(config["preferences"]["rampUpMs"])
-
 volumesOriginal = dict()
 
 
@@ -20,9 +13,16 @@ def current_milli_time():
 
 
 def onPlayStateChange(playing):
+    with open("config.json", "r") as f:
+        config = json.load(f)
+
+    duckPercent = int(config["preferences"]["duckByPercent"]) or 50
+    duckRamp = int(config["preferences"]["rampUpMs"])
+
     inputsList = inputs.get()
 
-    namesToDuck = [a["name"] for a in config["applications"] if a["role"] == "slave"]
+    namesToDuck = [a["name"]
+                   for a in config["applications"] if a["role"] == "slave"]
     inputsToDuck = [i for i in inputsList if i.name in namesToDuck]
 
     starttime = current_milli_time()
@@ -36,7 +36,8 @@ def onPlayStateChange(playing):
                 volumesOriginal[input.index] = int(input.volume)
                 duckedVolumeDifference = math.floor(
                     volumesOriginal[input.index]
-                    - ((100 - duckPercent) / 100 * volumesOriginal[input.index])
+                    - ((100 - duckPercent) / 100 *
+                       volumesOriginal[input.index])
                 )
                 volume = min(
                     math.floor(
@@ -61,5 +62,6 @@ def onPlayStateChange(playing):
                 else:
                     volume = int(input.volume)
             r = subprocess.check_output(
-                ["pacmd", "set-sink-input-volume", str(input.index), str(volume)]
+                ["pacmd", "set-sink-input-volume",
+                    str(input.index), str(volume)]
             )
