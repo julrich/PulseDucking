@@ -25,6 +25,7 @@
   ],
   "preferences": {
     "duckByPercent": 60,
-    "sourcesUpdateInterval": 5
+    "sourcesUpdateInterval": 5,
+    "rampUpMs": 1000
   }
 }
